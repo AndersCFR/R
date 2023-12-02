@@ -1,0 +1,329 @@
+---
+title: "Laboratorio 5"
+author: "Jose Emilio Vásconez"
+date: "2023-11-07"
+output: html_document
+---
+
+
+Vamos a hacer un laboratorio sencillo sobre la teoría de la regresión lineal que vimos en clases. La primera parte solo es código para que lo corran y vean los resultados. La segunda parte será su interpretación y tendrán que hacer código sencillo. 
+
+
+Primer modelo de regresión con la relación entre las variables "probabilidad de tener cáncer" y "edad". Como pueden ver, hice una base con datos que permiten establecer una relación directa entre la edad y el aumento de probabilida de cáncer. El código tiene la creación de la data, el modelo de regresión lineal con la función (lm), acompañado del símbolo (~). Ese símbolo me dice que quiero establecer una relación en un modelo entre esas dos variables. 
+
+```{r}
+library(MASS)
+
+set.seed(123)
+Edad <- 1:50
+Cancer <- 2 * Edad + rnorm(50, mean = 0, sd = 10)
+data <- data.frame(Edad, Cancer)
+
+print(data)
+
+modelo_Ejemplo <- lm(Cancer ~ Edad, data = data)
+summary(modelo_Ejemplo)
+
+plot(Cancer ~ Edad, data = data, main = "Regresión Lineal Simple", xlab = "Edad", ylab = "Probabilidad de Cancer")
+abline(modelo_Ejemplo, col = "blue")
+
+
+```
+
+
+
+Les puse este gráfico interactivo con los mismos datos, por si les interesa hacer gráficos más chéveres en sus presentaciones futuras. 
+
+```{r}
+
+
+library(plotly)
+
+x = Edad
+y = Cancer
+model = modelo_Ejemplo
+
+plot_ly(data, x = ~x, y = ~y, type = 'scatter', mode = 'markers', marker = list(color = 'blue')) %>%
+  add_lines(y = ~fitted(model), line = list(color = 'red')) %>%
+  layout(title = "Regresión Lineal Interactiva", xaxis = list(title = "Variable Independiente"), yaxis = list(title = "Variable Dependiente"))
+
+
+```
+
+
+
+Ahora, otro modelo, con una regresión lineal entre el gasto en publicidad y las ventas. Mayor gasto en publicidad equivale a más ventas???? Pueden verlo cuando corran el código. 
+
+```{r}
+
+set.seed(123)
+gasto_publicidad <- rnorm(100, mean = 50, sd = 15)
+ventas <- 30 + 0.5 * gasto_publicidad + rnorm(100, mean = 0, sd = 10)
+
+data_marketing <- data.frame(gasto_publicidad, ventas)
+
+model_marketing <- lm(ventas ~ gasto_publicidad, data = data_marketing)
+
+summary(model_marketing)
+
+plot(ventas ~ gasto_publicidad, data = data_marketing, main = "Regresión Lineal en Marketing", xlab = "Gasto en Publicidad", ylab = "Ventas")
+abline(model_marketing, col = "red")
+
+```
+
+
+
+Ahora lo mismo, para la relación entre el índice económico y el rendimiento de acciones en una empresa. Aquí si se van a sorprender mucho. Hice una base especialmente para generar una relación bastante extraña. Si se animan a comentar, pueden hacerlo aquí abajo: 
+
+Comenten aquí, si es que quieren. No es parte de la calificación del laboratorio. 
+
+```{r}
+
+set.seed(456)
+indice_economico <- rnorm(100, mean = -2, sd = 1)
+rendimiento_acciones <- -6  * indice_economico + rnorm(100, mean = 0, sd = 2)
+data_finanzas <- data.frame(indice_economico, rendimiento_acciones)
+model_finanzas <- lm(rendimiento_acciones ~ indice_economico, data = data_finanzas)
+summary(model_finanzas)
+plot(rendimiento_acciones ~ indice_economico, data = data_finanzas, main = "Regresión Lineal en Finanzas", xlab = "Índice Económico", ylab = "Rendimiento de Acciones")
+abline(model_finanzas, col = "red")  
+
+
+```
+
+
+
+Bueno. Les toca hacer e interpretar a ustedes. 
+
+
+Primero, voy a crear una base de datos para que puedan jugar: 
+
+```{r}
+
+n <- 100
+
+cov_matrix <- matrix(c(1, 0.7, -0.5, 0.4, 0.2,
+                      0.7, 1, -0.3, 0.2, 0.1,
+                      -0.5, -0.3, 1, -0.1, -0.4,
+                      0.4, 0.2, -0.1, 1, 0.5,
+                      0.2, 0.1, -0.4, 0.5, 1), ncol = 5)
+
+
+data <- mvrnorm(n, mu = c(5000, 15000, 7000, 2000, 5000), Sigma = cov_matrix)
+
+Base_MKT <- as.data.frame(data)
+colnames(Base_MKT) <- c("Gastos_Marketing", "Ventas", "Beneficio", "Inversion_Red_Social", "Ingresos_Publicidad_Online")
+
+```
+
+
+Ahora, pueden imprimir la base, para que vean lo que tenemos: 
+
+```{r}
+
+print(Base_MKT)
+
+```
+
+Para que no se olviden, pueden darme características de la base de datos?? También, hagan algunas operaciones y gráficos con las variables. Recuerden que todas son numéricas con la finalidad de hacer nuestras regresiones lineales. 
+
+
+### Estadísticos importantes de los datos
+```{r}
+#Hagan todo lo que puedan/quieran. Recuerden el mensaje a García. Usen todo lo que hemos aprendido.
+
+# Resumen de los datos
+summary(Base_MKT)
+
+```
+
+### Resumen de la base de datos
+
+```{r}
+# 
+str(Base_MKT)
+
+```
+
+Ahora sí, vamos a hacer las regresiones lineales. 
+
+
+Primero, quisiera ver las correlaciones entre las variables: Pueden hacerlo e interpretarlo?? Recuerden que podemos usar la función (cor). Yo les ayudo con la primera. Hagan un par más, y díganme el tipo de correlación que existe entre las variables. 
+
+
+Qué tipo de correlación encontraron??? Pueden explicar y poner su interpretación? Quisieran dibujarlo??? 
+
+
+**Escriban aquí su respuesta.**
+
+
+#### Correlación Gastos de Marketing vs Ventas
+
+```{r}
+cor(Base_MKT$Gastos_Marketing, Base_MKT$Ventas)
+```
+En este caso muestra que existe cierta correlación pero no es un correlación fuerte entre las 
+variables
+
+#### Correlación Gastos de Marketing vs Beneficio
+
+```{r}
+cor(Base_MKT$Gastos_Marketing, Base_MKT$Beneficio)
+```
+
+#### Inversión red social vs Ventas
+
+Indica cierta correlación negativa, está muy cerca de -0.2 por lo que casi es una correlación negativa 
+débil. Existe una. Podría indicar que un exesivo gasto en marketing no necesariamente generará un beneficio
+
+```{r}
+cor(Base_MKT$Inversion_Red_Social, Base_MKT$Ventas)
+```
+Indica cierta correlación positiva débil, es decir casi no existe una relación entre estas dos variables
+
+### Graficando para observar las relaciones entre variables
+
+```{r}
+if (!require(cowplot)) {
+  install.packages("cowplot")
+  library(cowplot)
+}
+
+# Crear scatter plot de Gastos_Marketing vs. Ventas
+scatter_plot_ventas <- ggplot(Base_MKT, aes(x = Gastos_Marketing, y = Ventas)) +
+  geom_point() +
+  labs(title = "Gastos de Marketing vs Ventas",
+       x = "Gastos de Marketing", y = "Ventas")
+
+# Crear scatter plot de Gastos_Marketing vs. Beneficio
+scatter_plot_beneficio <- ggplot(Base_MKT, aes(x = Gastos_Marketing, y = Beneficio)) +
+  geom_point() +
+  labs(title = "Gastos de Marketing vs Beneficio",
+       x = "Gastos de Marketing", y = "Beneficio")
+
+scatter_plot_ingresos <- ggplot(Base_MKT, aes(x = Inversion_Red_Social, y = Ingresos_Publicidad_Online)) +
+  geom_point() +
+  labs(title = "InvRedSocial vs IngresoPublicOnline",
+       x = "Inversion_Red_Social", y = "Ingresos_Publicidad_Online")
+
+# Crear scatter plot de Inversion_Red_Social vs. Ventas
+scatter_plot_ventas_inversion <- ggplot(Base_MKT, aes(x = Inversion_Red_Social, y = Ventas)) +
+  geom_point() +
+  labs(title = "Inversion_Red_Social vs Ventas",
+       x = "Inversion_Red_Social", y = "Ventas")
+
+
+plot_grid(scatter_plot_ventas, scatter_plot_beneficio,
+          scatter_plot_ingresos, scatter_plot_ventas_inversion,
+          ncol = 2, nrow = 2)
+
+```
+
+Ahora vamos a hacer un primer modelo. Quisiera que usen los ejemplos que hice arriba y hagan un primer modelo llamado ModeloVenMark con una regresión lineal entre las variables Ventas (variable dependiente) y Gastos_Marketing (variable independiente). Qué encontraron en el modelo?? Cómo lo interpretan?? Hagan un gráfico o un gráfico interactivo como los que les puse arriba. Qué me quiere decir el R cuadrado del modelo?? Respondan a todo esto en uno o dos párrafos abajo del chunk. 
+
+```{r}
+
+ModeloVenMark <- lm(Ventas ~ Gastos_Marketing, data = Base_MKT)
+
+summary(ModeloVenMark)
+
+plot(Ventas ~ Gastos_Marketing, data = Base_MKT, main = "Regresión Lineal en Ventas", xlab = "Gasto en Marketing", ylab = "Ventas")
+abline(ModeloVenMark, col = "red")
+
+```
+La métrica R2 indica que tan bueno es el modelo para explicar la variabilidad de la variable dependiente, 
+para ello se toma valores entre 0 y 1, cuando es 0 quiere decir que el modelo no explica la variabilidad 
+y 1 indica que el modelo explica totalmente la variabilidad. En este caso al ser 0.4, nos dice que de alguna maera explica el modelo pero no es tan preciso como se esperaría.
+
+De manera gráfica se puede observar que tiene sentido ya que existen datos que se encuentran muy dispersos de la línea que se ha dibujado.
+
+
+Ahora hagan lo mismo, usando como variable dependiente otra vez a "Ventas", pero la variable independiente ahora será Beneficio. No olviden de hacer uno o dos párrafos con la interpretación. 
+
+```{r}
+
+ModeloVenBen <- lm(Ventas ~ Beneficio, data = Base_MKT)
+
+summary(ModeloVenBen)
+
+plot(Ventas ~ Beneficio, data = Base_MKT, main = "Regresión Lineal en Ventas", xlab = "Beneficio", ylab = "Ventas")
+abline(ModeloVenBen, col = "red")
+
+```
+
+En este caso el modelo indica que existe una pequeña relación negativa entre Ventas y el Beneficio,
+analizando la métrica de R 2 vemos que es de 0.05 por lo que indica que el modelo es muy malo 
+no logra explicar para nada la variabilidad de las ventas basandonos en el beneficio.
+
+
+
+Ahora, hagan DOS MODELOS MÁS usando dos variables que consideren puedan indicarnos un resultado para la empresa. No olviden de hacer uno o dos párrafos con la interpretación. 
+
+```{r}
+
+ModeloVenInvRedSocial <- lm(Ventas ~ Inversion_Red_Social, data = Base_MKT)
+
+summary(ModeloVenInvRedSocial)
+
+plot(Ventas ~ Inversion_Red_Social, data = Base_MKT, main = "Regresión Lineal en Ventas", xlab = "Inversión en Redes Sociales", ylab = "Ventas")
+abline(ModeloVenInvRedSocial, col = "green")
+
+```
+
+Esta comparación entre la variable de Inversión en Redes Sociales y Ventas tiene un comportamiento bastante similar al modelo anterior, pero en este caso muestra cierta relación positiva, al revisar el factor 
+R2 se evidencia que es muy similar al anterior por lo que el modelo no es adecuado para mostrar la 
+variabilidad.
+
+```{r}
+
+ModeloVenIngrPubOnline <- lm(Ventas ~ Ingresos_Publicidad_Online, data = Base_MKT)
+
+summary(ModeloVenIngrPubOnline)
+
+plot(Ventas ~ Ingresos_Publicidad_Online, data = Base_MKT, main = "Regresión Lineal en Ventas", xlab = "Ingresos Publicidad Online", ylab = "Ventas")
+abline(ModeloVenIngrPubOnline, col = "blue")
+
+```
+
+De los cuatro modelos elaborados este es el que peor interpretación y resultados produce, tiene una 
+línea casi horizontal, el factor R 2 es el más bajo de todos los ejercicios indicando que este 
+modelo es totalmente aleatorio e inadecuado para estos datos.
+
+
+Ahora, usen esta maravillosa función para poder poner en una sola tabla todos los resultados de sus modelos: 
+
+```{r}
+
+library(stargazer)
+
+#summary(ModeloVenBen)
+lista_modelos <- list(ModeloVenMark, ModeloVenBen, ModeloVenInvRedSocial, ModeloVenIngrPubOnline)
+
+stargazer(lista_modelos, title="Resumen de modelos usados", type = "text")
+
+```
+
+
+Finalmente, escriban un párrafo en el que puedan concluir cuál es su mejor modelo. Luego, escriban cuatro decisiones que puede tomar la empresa a partir de sus modelos de regresión lineal. 
+
+
+Evidentemente en el análisis realizado en todo el laboratorio se pudo observar que el modelo de relación 
+lineal entre Ventas y Gastos Marketing es el mejor modelo para los datos entregados, a pesar de ser un 
+buen modelo tampoco llega a ser perfecto ya que existen datos atípicos que perjudican al entrenamiento, 
+el modelo de Ventas con Beneficio es malo pero si deja la pequeña idea de que existe cierta relación 
+debil negativa entre estas dos variables.
+
+
+#### Decisiones: 
+
+1. Mantener o aumentar el gasto en marketing porque este necesariamente si se va a reflejar en la 
+cantidad de ventas.
+
+2. Cuando se realizan muchas ventas evitar dar muchos descuentos o revisar como abaratar el costo 
+de producción ya que existe una cierta relación negativa entre una gran cantidad de ventas 
+y el beneficio que se tiene.
+
+3. Los ingresos y la publicidad online no están relacionados, considerar una revisión de este proceso
+
+4. Las ventas y la inversión en redes sociales parecen no estar asociadas, realizar más análisis 
+con otro tipo de modelos para confirmar una posible reducción en este ámbito.

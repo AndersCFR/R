@@ -1,0 +1,29 @@
+---
+title: "Muestreo aleatorio con reposición"
+author: "Anderson"
+date: "2/12/2021"
+output: html_document
+---
+
+m.a.s: muestra aleatorio simple
+
+Consiste en tomar n número de veces el mismo número y devolverlo, 
+el inconveniente es que un individuo puede ser seleccionado más de una vez.
+
+```{r}
+sample(1:100, 15, replace = TRUE)
+```
+
+Si queremos obtener siempre la misma muestra, podemos utilizar una semilla,
+ejemplo obtener 10 flores aleatorias de las 150 del dataset iris.
+
+```{r}
+#head(iris)
+set.seed(4)
+flores_elegidas_10_con = sample(1:150, 10, replace = TRUE)
+muestra_iris_10_con = iris[flores_elegidas_10_con,]
+muestra_iris_10_con
+```
+
+
+

@@ -1,0 +1,22 @@
+---
+title: "Introducción al muestreo"
+author: "Anderson"
+date: "2/12/2023"
+output: html_document
+---
+
+Permite tomar una muestra y medir los datos deseados sobre los individuos que 
+la forman.
+
+
+Pasos de estadística inferencial:
+
+- 1. Establecer la característica que se desea estimar o la hipótesis que se desea 
+contrastar.
+
+- 2. Determinar la información que se necesita para hacerlo.
+
+- 3. Diseñar un experimento que permita recoger estos datos, esto incluye: 
+Decidir qué tipo de muestra se va a tomar y su tamaño, adicionalmente se debe 
+escoger qué técnicas adecuadas se utilizarán para hacer las inferencias a partir 
+de la muestra.

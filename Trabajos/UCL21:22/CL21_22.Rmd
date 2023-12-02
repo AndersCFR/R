@@ -1,0 +1,283 @@
+---
+title: "Análisis Champions League 2021 2022"
+author: "Isaias Arcos y Nicolás Bejarano"
+date: "23/10/2023"
+output:
+  html_document:
+    df_print: paged
+---
+
+![](imgs/encabezado.jpg)
+```{css, echo=FALSE}
+h1.title {
+  text-align: center;
+}
+
+
+
+
+En la temporada 2021-2022 al igual que todos los años se disputó la competencia 
+más importante a nivel clubes la *UEFA Champions League*, la competencia más 
+exigente y esperada del año. El analizar estos datos de esta competencia es 
+importante debido a que los mejores futbolistas participan en la disputa de este 
+trofeo.
+
+
+**Tratamiento previo**
+```{r}
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+
+attacking <- read.csv("data/attacking.csv")
+attempts <- read.csv("data/attempts.csv")
+defending <- read.csv("data/defending.csv")
+goalkeeper <- read.csv("data/goalkeeping.csv")
+midfielders <- read.csv("data/distributon.csv")
+goals <- read.csv("data/goals.csv")
+
+
+# cambio de nombres dataset portero
+goalkeeper <- goalkeeper %>%
+  rename(
+    Serial = serial,
+    Nombre_jugador = player_name,
+    Equipo = club,
+    Posicion = position,
+    Paradas = saved,
+    Goles_concedidos = conceded,
+    Penales_parados = saved_penalties,
+    Partidos_sin_goles = cleansheets,
+    #Despejes = punches_made,
+    Partidos_jugados = match_played
+  )
+
+
+# cambio de nombres dataset defensa
+defending <- defending %>%
+  rename(
+    serial = serial,
+    Nombre_jugador = player_name,
+    Equipo = club,
+    Posicion = position,
+    Balones_recuperados = balls_recoverd,
+    Entradas = tackles,
+    Entradas_ganadas = t_won,
+    Entradas_perdidas = t_lost,
+    Despejes_intentados = clearance_attempted,
+    Partidos_jugados = match_played
+  )
+
+# medio campo
+midfielders <- midfielders %>%
+  rename(
+    serial = serial,
+    Nombre_jugador = player_name,
+    Equipo = club,
+    Posicion = position,
+    Precisión_pase = pass_accuracy,
+    Pases_intentados = pass_attempted,
+    Pases_completados = pass_completed,
+    Precisión_centro = cross_accuracy,
+    Centros_intentados = cross_attempted,
+    Centros_completados = cross_complted
+  )
+
+# renombrar variables de goles
+goals <- goals %>%
+  rename(
+    serial = serial,
+    nombre_jugador = player_name,
+    equipo = club,
+    posicion = position,
+    goles = goals,
+    pie_derecho = right_foot,
+    pie_izquierdo = left_foot,
+    cabezazos = headers,
+    otros = others,
+    dentro_area = inside_area
+  )
+```
+
+El fútbol es un deporte colectivo y de altísima complejidad por lo que es 
+importante analizar todas las fasetas del juego:
+
+- Arco
+- Defensa
+- Medio campo
+- Ataque
+
+# Análisis de porteros
+
+Las salvadas así como intervenciones importantes prácticamente son un "gol" 
+para el equipo, por lo que si el arquero está en un gran nivel sin duda ayuda 
+mucho en una competición corta como esta.
+
+```{r}
+top_goalkeepers <- goalkeeper %>%
+  arrange(desc(Paradas)) %>%
+  head(10)
+
+ggplot(top_goalkeepers, aes(x=Nombre_jugador, y=Paradas, fill=Equipo)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title="Paradas realizadas por Portero (Top 10)", 
+       x="Portero", 
+       y="Número de Paradas") +
+  theme(legend.title=element_blank())  # Esto retira la leyenda
+
+```
+
+Vemos claramente que Courtois es el claro ganador, pero esto se puede deber a que 
+jugó más partidos, vamos a realziar un análisis más profundo, para medir el 
+rendimiento de los porteros dependiendo de la cantidad de participaciones.
+
+```{r}
+# creamos una nueva métrica
+goalkeeper <- goalkeeper %>%
+  mutate(Paradas_por_partido = Paradas / Partidos_jugados) %>%
+  arrange(desc(Paradas_por_partido)) %>%
+  head(10)
+
+ggplot(goalkeeper, aes(x=Nombre_jugador, y=Paradas_por_partido, fill=Equipo)) +
+  geom_bar(stat="identity", position="dodge") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title="Paradas por Partido por Portero (Top 10)", 
+       x="Portero", 
+       y="Paradas por Partido") +
+  theme(legend.title=element_blank())
+```
+
+Realizando este análisis vemos que aún así Courtois sigue estando entre los mejores 
+sin embargo los porteros *Trubin* del *Sharkhtar Donest* y *Celeadnic* de *Sherif* 
+también han tenido un alto rendimiento.
+
+# Análisis de defensa
+
+Primero obtenemos las estadísticas generales de la competición en el apartado defensivo
+
+## Recuperaciones de balón
+
+Las recuperaciones de balón son fundamentales pues permiten interrumpir un ataque 
+rival y recuperar la poseción del balón o armar un contra ataque, aquí observamos 
+el **Top 10 jugadores** con mayores recuperaciones de balón. 
+
+```{r}
+top_balls_recovered <- defending %>%
+  arrange(desc(Balones_recuperados)) %>%
+  head(10) %>% 
+   select(Nombre_jugador, Equipo, Balones_recuperados)
+#print(top_balls_recovered)
+kable(top_balls_recovered, "html") %>%
+kable_styling()
+
+```
+
+## Distribución de entradas exitosas por equipo
+
+```{r}
+# para evitar la carga cognitiva vamos a filtrar el top 10 equipos con más entradas exitosas
+top_teams_success_tackles <- defending %>%
+  group_by(Equipo) %>%
+  summarize(mediana_entradas = median(Entradas_ganadas)) %>%
+  arrange(desc(mediana_entradas)) %>%
+  head(10) %>%
+  pull(Equipo)
+
+# Diagarama de cajas
+defending %>%
+  filter(Equipo %in% top_teams_success_tackles) %>%
+  ggplot(aes(x=Equipo, y=Entradas_ganadas)) +
+  geom_boxplot(aes(fill=Equipo)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
+  labs(title="Distribución de Entradas ganadas por Equipo (Top 10)", 
+       x="Equipo", 
+       y="Entradas ganadas") +
+  theme(legend.position="none") #elimina leyenda
+
+```
+
+Se puede observar que el Real Madrid es el claro ganador en cuanto a entradas 
+exitosas, considerando que se está analizando el top 10 vemos que el resto de 
+equipos no llegaron a instancias decisivas de la competición, lo que claramente 
+indica que sin duda el **Real Madrid** tuvo una superioridad defensiva 
+frente a sus rivales, su diagrama de caja muestra una simetría casi perfecta, lo 
+que indica uns distribución uniforme en el número de entradas exitosas por partido 
+y nos indica su *consistencia y solidez defensiva*.
+
+# Análisis de medio campo
+
+```{r}
+# top de distribucion basados en nueva metrica 
+# pases compeltados e intentados
+top_midfielders <- midfielders %>%
+  mutate(Puntuacion_compuesta = Pases_intentados * Pases_completados) %>%
+  arrange(desc(Puntuacion_compuesta)) %>%
+  head(10)
+
+# establecer top para leyenda de burbuja pases completados
+tres_tamanos_maximos <- sort(unique(top_midfielders$Pases_completados), decreasing = TRUE)[1:1]
+
+ggplot(top_midfielders, aes(x=reorder(Nombre_jugador, -Puntuacion_compuesta), y=Pases_intentados, size=Pases_completados, color=Equipo)) +
+  geom_point(alpha=0.7) +
+  scale_size_continuous(range = c(3, 30), breaks=tres_tamanos_maximos) +
+  labs(
+    title="Mediocampo por Pases Intentados y Completados (Top 10)",
+    x="Jugador",
+    y="Pases Intentados",
+    size="Pases Completados",
+    color="Equipo"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "right",
+        legend.spacing.y = unit(0.5, "cm")) +
+  guides(size=guide_legend(order=1), color=guide_legend(order=2))
+
+```
+
+En este gráfico se puede apreciar el top de futbolistas con mayor cantidad 
+de pases intentados y su relación con pases completados con éxito.
+
+## Análisis de delanteros
+
+Finalmente el aparatado defensivo es vital, por ello tenemos el top delanteros 
+de la temporada.
+
+```{r}
+top_goleadores <- goals %>%
+  arrange(desc(goles)) %>%
+  head(10)
+
+ggplot(top_goleadores, aes(x=reorder(nombre_jugador, goles), y=goles, color=equipo)) +
+  geom_segment(aes(xend=nombre_jugador, yend=0, color=equipo), size=0.5) + 
+  geom_point(size=4) +
+  coord_flip() +
+  labs(
+    title="Top 10 Goleadores",
+    y="Número de Goles",
+    x="Jugador"
+  ) +
+  theme_minimal() +
+  theme(axis.title.y=element_blank()) +
+  scale_color_discrete(name="Equipo")
+
+```
+
+Como podemos observar el podio se lo llevan Benzema, Lewandowski y Haller.
+
+# Conclusiones
+
+En la temporada 2021-2022 el equipo ganador fue el Real Madrid, si realizamos 
+un análisis detallado es un más que justo ganador, obteniendo podio en todas 
+las fasetas del campo, se puede destacar el volúmen de pases intentados/exitosos 
+de sus medio campistas Kroos Y Modric, así como también una temporada que roza la gloria 
+de Benzema y Courtois.
+
+Como apartado adicional jugadores muy interesantes son Haller, debido a la cantidad 
+de goles marcados a pesar de no haber tenido tantas participaciones. Kimmich a pesar de no 
+haber llegado a la final tienen una gran cantidad de pases intentados y un gran 
+volumen de acierto, además de ser un jugador que no solo da pases "defensivos". 
+
+![](imgs/rm.jpg)
+
+
