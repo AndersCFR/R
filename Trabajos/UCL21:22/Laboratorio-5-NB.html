@@ -1,0 +1,830 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html><head></head><body>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div>
+
+
+
+<h1 class="title toc-ignore">Laboratorio 5</h1>
+<h4 class="author">Nicol&#225;s Beajarano</h4>
+<h4 class="date">2023-11-27</h4>
+
+</div>
+
+
+<p>Vamos a hacer un laboratorio sencillo sobre la teor&#237;a de la regresi&#243;n
+lineal que vimos en clases. La primera parte solo es c&#243;digo para que lo
+corran y vean los resultados. La segunda parte ser&#225; su interpretaci&#243;n y
+tendr&#225;n que hacer c&#243;digo sencillo.</p>
+<p>Primer modelo de regresi&#243;n con la relaci&#243;n entre las variables
+“probabilidad de tener c&#225;ncer” y “edad”. Como pueden ver, hice una base
+con datos que permiten establecer una relaci&#243;n directa entre la edad y
+el aumento de probabilida de c&#225;ncer. El c&#243;digo tiene la creaci&#243;n de la
+data, el modelo de regresi&#243;n lineal con la funci&#243;n (lm), acompa&#241;ado del
+s&#237;mbolo (~). Ese s&#237;mbolo me dice que quiero establecer una relaci&#243;n en
+un modelo entre esas dos variables.</p>
+<pre class="r"><code>library(MASS)
+
+set.seed(123)
+Edad &lt;- 1:50
+Cancer &lt;- 2 * Edad + rnorm(50, mean = 0, sd = 10)
+data &lt;- data.frame(Edad, Cancer)
+
+print(data)</code></pre>
+<pre><code>##    Edad     Cancer
+## 1     1  -3.604756
+## 2     2   1.698225
+## 3     3  21.587083
+## 4     4   8.705084
+## 5     5  11.292877
+## 6     6  29.150650
+## 7     7  18.609162
+## 8     8   3.349388
+## 9     9  11.131471
+## 10   10  15.543380
+## 11   11  34.240818
+## 12   12  27.598138
+## 13   13  30.007715
+## 14   14  29.106827
+## 15   15  24.441589
+## 16   16  49.869131
+## 17   17  38.978505
+## 18   18  16.333828
+## 19   19  45.013559
+## 20   20  35.272086
+## 21   21  31.321763
+## 22   22  41.820251
+## 23   23  35.739956
+## 24   24  40.711088
+## 25   25  43.749607
+## 26   26  35.133067
+## 27   27  62.377870
+## 28   28  57.533731
+## 29   29  46.618631
+## 30   30  72.538149
+## 31   31  66.264642
+## 32   32  61.049285
+## 33   33  74.951257
+## 34   34  76.781335
+## 35   35  78.215811
+## 36   36  78.886403
+## 37   37  79.539177
+## 38   38  75.380883
+## 39   39  74.940373
+## 40   40  76.195290
+## 41   41  75.052930
+## 42   42  81.920827
+## 43   43  73.346036
+## 44   44 109.689560
+## 45   45 102.079620
+## 46   46  80.768914
+## 47   47  89.971152
+## 48   48  91.333446
+## 49   49 105.799651
+## 50   50  99.166309</code></pre>
+<pre class="r"><code>modelo_Ejemplo &lt;- lm(Cancer ~ Edad, data = data)
+summary(modelo_Ejemplo)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Cancer ~ Edad, data = data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -20.1120  -6.2223  -0.8193   6.6590  21.5966 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.69016    2.68547   0.257    0.798    
+## Edad         1.98643    0.09165  21.673   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 9.353 on 48 degrees of freedom
+## Multiple R-squared:  0.9073, Adjusted R-squared:  0.9054 
+## F-statistic: 469.7 on 1 and 48 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(Cancer ~ Edad, data = data, main = &quot;Regresi&#243;n Lineal Simple&quot;, xlab = &quot;Edad&quot;, ylab = &quot;Probabilidad de Cancer&quot;)
+abline(modelo_Ejemplo, col = &quot;blue&quot;)</code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>Les puse este gr&#225;fico interactivo con los mismos datos, por si les
+interesa hacer gr&#225;ficos m&#225;s ch&#233;veres en sus presentaciones futuras.</p>
+<pre class="r"><code>library(plotly)</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plotly&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     last_plot</code></pre>
+<pre><code>## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter</code></pre>
+<pre><code>## The following object is masked from &#39;package:graphics&#39;:
+## 
+##     layout</code></pre>
+<pre class="r"><code>x = Edad
+y = Cancer
+model = modelo_Ejemplo
+
+plot_ly(data, x = ~x, y = ~y, type = &#39;scatter&#39;, mode = &#39;markers&#39;, marker = list(color = &#39;blue&#39;)) %&gt;%
+  add_lines(y = ~fitted(model), line = list(color = &#39;red&#39;)) %&gt;%
+  layout(title = &quot;Regresi&#243;n Lineal Interactiva&quot;, xaxis = list(title = &quot;Variable Independiente&quot;), yaxis = list(title = &quot;Variable Dependiente&quot;))</code></pre>
+<pre><code>## A marker object has been specified, but markers is not in the mode
+## Adding markers to the mode...</code></pre>
+<div class="plotly html-widget html-fill-item" style="width:672px;height:480px;"></div>
+
+<p>Ahora, otro modelo, con una regresi&#243;n lineal entre el gasto en
+publicidad y las ventas. Mayor gasto en publicidad equivale a m&#225;s
+ventas???? Pueden verlo cuando corran el c&#243;digo.</p>
+<pre class="r"><code>set.seed(123)
+gasto_publicidad &lt;- rnorm(100, mean = 50, sd = 15)
+ventas &lt;- 30 + 0.5 * gasto_publicidad + rnorm(100, mean = 0, sd = 10)
+
+data_marketing &lt;- data.frame(gasto_publicidad, ventas)
+
+model_marketing &lt;- lm(ventas ~ gasto_publicidad, data = data_marketing)
+
+summary(model_marketing)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = ventas ~ gasto_publicidad, data = data_marketing)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -19.073  -6.835  -0.875   5.806  32.904 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      30.72102    3.78581   8.115 1.44e-12 ***
+## gasto_publicidad  0.46502    0.07125   6.526 2.98e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 9.707 on 98 degrees of freedom
+## Multiple R-squared:  0.303,  Adjusted R-squared:  0.2958 
+## F-statistic: 42.59 on 1 and 98 DF,  p-value: 2.984e-09</code></pre>
+<pre class="r"><code>plot(ventas ~ gasto_publicidad, data = data_marketing, main = &quot;Regresi&#243;n Lineal en Marketing&quot;, xlab = &quot;Gasto en Publicidad&quot;, ylab = &quot;Ventas&quot;)
+abline(model_marketing, col = &quot;red&quot;)</code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>Ahora lo mismo, para la relaci&#243;n entre el &#237;ndice econ&#243;mico y el
+rendimiento de acciones en una empresa. Aqu&#237; si se van a sorprender
+mucho. Hice una base especialmente para generar una relaci&#243;n bastante
+extra&#241;a. Si se animan a comentar, pueden hacerlo aqu&#237; abajo:</p>
+<p>Comenten aqu&#237;, si es que quieren. No es parte de la calificaci&#243;n del
+laboratorio.</p>
+<pre class="r"><code>set.seed(456)
+indice_economico &lt;- rnorm(100, mean = -2, sd = 1)
+rendimiento_acciones &lt;- -6  * indice_economico + rnorm(100, mean = 0, sd = 2)
+data_finanzas &lt;- data.frame(indice_economico, rendimiento_acciones)
+model_finanzas &lt;- lm(rendimiento_acciones ~ indice_economico, data = data_finanzas)
+summary(model_finanzas)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = rendimiento_acciones ~ indice_economico, data = data_finanzas)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.4310 -1.6253 -0.0983  1.8306  3.8262 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       -0.2956     0.4168  -0.709     0.48    
+## indice_economico  -6.0331     0.1959 -30.790   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.953 on 98 degrees of freedom
+## Multiple R-squared:  0.9063, Adjusted R-squared:  0.9054 
+## F-statistic:   948 on 1 and 98 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>plot(rendimiento_acciones ~ indice_economico, data = data_finanzas, main = &quot;Regresi&#243;n Lineal en Finanzas&quot;, xlab = &quot;&#205;ndice Econ&#243;mico&quot;, ylab = &quot;Rendimiento de Acciones&quot;)
+abline(model_finanzas, col = &quot;red&quot;)  </code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>Bueno. Les toca hacer e interpretar a ustedes.</p>
+<p>Primero, voy a crear una base de datos para que puedan jugar:</p>
+<pre class="r"><code>n &lt;- 100
+
+cov_matrix &lt;- matrix(c(1, 0.7, -0.5, 0.4, 0.2,
+                      0.7, 1, -0.3, 0.2, 0.1,
+                      -0.5, -0.3, 1, -0.1, -0.4,
+                      0.4, 0.2, -0.1, 1, 0.5,
+                      0.2, 0.1, -0.4, 0.5, 1), ncol = 5)
+
+
+data &lt;- mvrnorm(n, mu = c(5000, 15000, 7000, 2000, 5000), Sigma = cov_matrix)
+
+Base_MKT &lt;- as.data.frame(data)
+colnames(Base_MKT) &lt;- c(&quot;Gastos_Marketing&quot;, &quot;Ventas&quot;, &quot;Beneficio&quot;, &quot;Inversion_Red_Social&quot;, &quot;Ingresos_Publicidad_Online&quot;)</code></pre>
+<p>Ahora, pueden imprimir la base, para que vean lo que tenemos:</p>
+<pre class="r"><code>print(Base_MKT)</code></pre>
+<pre><code>##     Gastos_Marketing   Ventas Beneficio Inversion_Red_Social
+## 1           5000.170 15000.64  7000.631             1999.581
+## 2           4999.097 14998.74  7000.427             1999.388
+## 3           5000.078 15000.32  6999.662             1999.917
+## 4           4999.041 14999.50  6999.399             2000.689
+## 5           5000.743 14999.58  6999.853             2000.019
+## 6           5001.166 15000.57  6999.962             2001.839
+## 7           5000.949 15000.99  6999.849             2000.488
+## 8           5001.360 15000.42  7001.264             1999.196
+## 9           5000.143 14998.90  7000.955             2001.863
+## 10          4999.071 15000.34  7001.002             2000.046
+## 11          4999.207 14998.77  6999.963             1998.239
+## 12          4999.112 14999.34  7001.208             2001.420
+## 13          4999.691 14999.62  7001.523             2000.642
+## 14          5000.344 14999.93  6999.364             2000.585
+## 15          5000.035 15000.82  7002.262             2000.966
+## 16          4998.716 14999.17  7001.478             1999.062
+## 17          4998.850 14998.70  7000.624             2000.540
+## 18          5000.355 14997.75  6998.457             1999.067
+## 19          4999.305 14999.49  6999.467             1999.813
+## 20          4998.749 14997.84  6999.862             2000.482
+## 21          5000.329 15002.09  6998.310             2001.000
+## 22          4998.463 14999.55  7000.630             1998.455
+## 23          4999.986 14999.88  6999.452             2001.015
+## 24          5001.170 15000.64  6999.476             1999.964
+## 25          4999.961 15000.15  7000.532             2001.257
+## 26          4999.197 14999.91  7000.681             1999.578
+## 27          4999.489 15000.03  6999.758             1998.965
+## 28          5000.982 15001.64  6999.574             2000.768
+## 29          4998.879 14998.99  7001.745             1999.592
+## 30          4999.406 14998.53  6999.292             1999.777
+## 31          4997.561 14998.87  7001.295             1999.989
+## 32          5000.368 15001.32  7000.283             2000.945
+## 33          4998.987 14998.94  7001.369             2000.609
+## 34          5000.131 15000.84  7000.916             2000.429
+## 35          4999.969 14998.79  7000.703             2001.618
+## 36          5000.080 14999.95  7000.816             1999.333
+## 37          4999.035 15000.19  6999.366             2001.528
+## 38          4999.114 14999.25  6999.976             2000.392
+## 39          4998.504 14999.40  7001.398             1998.034
+## 40          5001.279 15000.50  6998.824             2000.958
+## 41          4999.005 14999.04  7002.740             1999.560
+## 42          5000.468 15001.48  6999.876             2000.493
+## 43          5001.092 15001.21  6999.447             2000.595
+## 44          4998.844 14998.33  7000.058             2000.307
+## 45          5001.856 15001.00  6999.685             1999.569
+## 46          5001.233 15002.18  6999.568             2001.810
+## 47          4999.403 14999.45  7001.706             2000.189
+## 48          4999.832 15000.20  7000.232             1999.449
+## 49          5001.140 14999.93  6998.905             2000.832
+## 50          4999.798 14999.09  7000.824             2000.585
+## 51          4999.559 14999.58  7000.036             2000.110
+## 52          5000.300 15000.05  7001.008             2000.308
+## 53          4999.950 15000.44  7000.649             1999.319
+## 54          5000.887 14999.75  6998.990             2000.741
+## 55          4999.424 14999.52  7000.215             2000.423
+## 56          5000.607 14999.91  7000.277             2000.484
+## 57          5001.357 14999.82  6999.026             2001.979
+## 58          5000.015 14999.48  6999.825             2000.546
+## 59          5000.007 15000.36  7000.420             2000.651
+## 60          4999.653 14999.79  7000.674             1999.619
+## 61          4998.625 14999.19  7001.267             2000.324
+## 62          5000.940 15000.20  7001.753             2002.396
+## 63          4999.798 15000.68  7001.265             1999.934
+## 64          4997.407 14999.00  7000.732             1998.986
+## 65          4998.363 14999.26  7000.095             1999.597
+## 66          5000.561 15000.38  6999.895             1999.403
+## 67          5001.169 15000.67  6999.932             2001.089
+## 68          4998.957 14999.68  7002.656             2000.168
+## 69          5000.603 15000.29  7001.572             2000.885
+## 70          4999.893 14999.05  6999.094             1998.662
+## 71          5001.803 15001.00  6997.279             2001.355
+## 72          5000.616 15000.74  7000.114             1999.251
+## 73          5000.486 15001.44  6998.073             2000.922
+## 74          4997.722 14997.94  7001.236             1999.927
+## 75          4999.272 15000.23  7000.608             1999.941
+## 76          5000.824 15000.05  7000.954             2000.841
+## 77          4999.771 14998.35  7001.224             2000.034
+## 78          5000.336 14999.98  6999.514             1998.991
+## 79          5000.899 15000.47  6998.774             1999.989
+## 80          5000.312 14999.98  7001.507             2001.400
+## 81          4999.727 15000.65  7001.514             1999.230
+## 82          4999.229 14999.50  7000.466             2001.256
+## 83          4998.225 14998.41  6999.445             1997.620
+## 84          5000.754 15000.36  7000.208             1999.484
+## 85          4997.283 14997.60  7000.821             1998.492
+## 86          5000.327 15000.74  6999.552             2000.573
+## 87          5000.618 14999.74  6999.835             2001.679
+## 88          4999.522 15000.11  7000.127             2000.384
+## 89          5000.737 15001.15  6999.520             2000.109
+## 90          5000.341 15001.55  6999.274             1999.672
+## 91          5001.038 15000.97  6998.633             1999.744
+## 92          4999.531 14999.77  6999.652             1998.582
+## 93          4998.356 14999.64  7000.002             1999.581
+## 94          4999.917 15001.16  7000.524             1999.454
+## 95          4999.760 15000.14  6999.551             2001.056
+## 96          4999.296 15000.44  7000.525             1999.280
+## 97          5000.298 15001.59  7001.598             1999.933
+## 98          5000.529 15000.49  6999.699             2000.676
+## 99          5000.056 15000.25  6999.359             1999.985
+## 100         4999.626 14999.89  7000.738             1998.049
+##     Ingresos_Publicidad_Online
+## 1                     4998.936
+## 2                     4999.659
+## 3                     4999.221
+## 4                     5002.254
+## 5                     4999.563
+## 6                     5000.045
+## 7                     4999.059
+## 8                     4999.263
+## 9                     4999.902
+## 10                    4999.363
+## 11                    4999.563
+## 12                    4999.302
+## 13                    4999.142
+## 14                    5000.494
+## 15                    5000.532
+## 16                    4999.916
+## 17                    4999.542
+## 18                    4999.498
+## 19                    5000.704
+## 20                    5000.371
+## 21                    5001.104
+## 22                    4999.417
+## 23                    5000.224
+## 24                    5000.749
+## 25                    5001.292
+## 26                    5000.046
+## 27                    4999.330
+## 28                    5001.385
+## 29                    4999.738
+## 30                    4999.314
+## 31                    4999.652
+## 32                    4999.997
+## 33                    5000.065
+## 34                    4999.069
+## 35                    5001.357
+## 36                    4998.888
+## 37                    5001.963
+## 38                    4999.235
+## 39                    4998.140
+## 40                    4999.870
+## 41                    4998.656
+## 42                    5000.376
+## 43                    5000.019
+## 44                    5000.295
+## 45                    4999.648
+## 46                    5000.698
+## 47                    4999.189
+## 48                    4999.120
+## 49                    5000.485
+## 50                    4998.921
+## 51                    5002.094
+## 52                    5000.045
+## 53                    4999.976
+## 54                    5002.091
+## 55                    5001.468
+## 56                    5000.528
+## 57                    5000.313
+## 58                    5000.722
+## 59                    5001.166
+## 60                    5000.487
+## 61                    4999.680
+## 62                    5000.204
+## 63                    4999.233
+## 64                    5000.003
+## 65                    5000.145
+## 66                    4999.630
+## 67                    5000.321
+## 68                    4997.839
+## 69                    4998.613
+## 70                    4998.296
+## 71                    5001.361
+## 72                    4998.492
+## 73                    5002.167
+## 74                    5000.552
+## 75                    4999.512
+## 76                    4999.407
+## 77                    5000.231
+## 78                    5000.148
+## 79                    5001.370
+## 80                    4999.776
+## 81                    4998.672
+## 82                    5000.936
+## 83                    4999.174
+## 84                    4998.780
+## 85                    4998.339
+## 86                    4999.878
+## 87                    5000.434
+## 88                    5000.615
+## 89                    5001.000
+## 90                    4999.936
+## 91                    4999.916
+## 92                    4999.320
+## 93                    4999.912
+## 94                    4999.195
+## 95                    5001.790
+## 96                    5000.452
+## 97                    4999.831
+## 98                    5001.018
+## 99                    5000.372
+## 100                   4998.492</code></pre>
+<p>Para que no se olviden, pueden darme caracter&#237;sticas de la base de
+datos?? Tambi&#233;n, hagan algunas operaciones y gr&#225;ficos con las variables.
+Recuerden que todas son num&#233;ricas con la finalidad de hacer nuestras
+regresiones lineales.</p>
+<div class="section level3">
+<h3>Estad&#237;sticos importantes de los datos</h3>
+<pre class="r"><code>#Hagan todo lo que puedan/quieran. Recuerden el mensaje a Garc&#237;a. Usen todo lo que hemos aprendido.
+
+# Resumen de los datos
+summary(Base_MKT)</code></pre>
+<pre><code>##  Gastos_Marketing     Ventas        Beneficio    Inversion_Red_Social
+##  Min.   :4997     Min.   :14998   Min.   :6997   Min.   :1998        
+##  1st Qu.:4999     1st Qu.:14999   1st Qu.:7000   1st Qu.:2000        
+##  Median :5000     Median :15000   Median :7000   Median :2000        
+##  Mean   :5000     Mean   :15000   Mean   :7000   Mean   :2000        
+##  3rd Qu.:5001     3rd Qu.:15001   3rd Qu.:7001   3rd Qu.:2001        
+##  Max.   :5002     Max.   :15002   Max.   :7003   Max.   :2002        
+##  Ingresos_Publicidad_Online
+##  Min.   :4998              
+##  1st Qu.:4999              
+##  Median :5000              
+##  Mean   :5000              
+##  3rd Qu.:5001              
+##  Max.   :5002</code></pre>
+</div>
+<div class="section level3">
+<h3>Resumen de la base de datos</h3>
+<pre class="r"><code># 
+str(Base_MKT)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    100 obs. of  5 variables:
+##  $ Gastos_Marketing          : num  5000 4999 5000 4999 5001 ...
+##  $ Ventas                    : num  15001 14999 15000 14999 15000 ...
+##  $ Beneficio                 : num  7001 7000 7000 6999 7000 ...
+##  $ Inversion_Red_Social      : num  2000 1999 2000 2001 2000 ...
+##  $ Ingresos_Publicidad_Online: num  4999 5000 4999 5002 5000 ...</code></pre>
+<p>Ahora s&#237;, vamos a hacer las regresiones lineales.</p>
+<p>Primero, quisiera ver las correlaciones entre las variables: Pueden
+hacerlo e interpretarlo?? Recuerden que podemos usar la funci&#243;n (cor).
+Yo les ayudo con la primera. Hagan un par m&#225;s, y d&#237;ganme el tipo de
+correlaci&#243;n que existe entre las variables.</p>
+<p>Qu&#233; tipo de correlaci&#243;n encontraron??? Pueden explicar y poner su
+interpretaci&#243;n? Quisieran dibujarlo???</p>
+<p><strong>Escriban aqu&#237; su respuesta.</strong></p>
+<div class="section level4">
+<h4>Correlaci&#243;n Gastos de Marketing vs Ventas</h4>
+<pre class="r"><code>cor(Base_MKT$Gastos_Marketing, Base_MKT$Ventas)</code></pre>
+<pre><code>## [1] 0.6585203</code></pre>
+<p>En este caso muestra que existe cierta correlaci&#243;n pero no es un
+correlaci&#243;n fuerte entre las variables</p>
+</div>
+<div class="section level4">
+<h4>Correlaci&#243;n Gastos de Marketing vs Beneficio</h4>
+<pre class="r"><code>cor(Base_MKT$Gastos_Marketing, Base_MKT$Beneficio)</code></pre>
+<pre><code>## [1] -0.4178565</code></pre>
+</div>
+<div class="section level4">
+<h4>Inversi&#243;n red social vs Ventas</h4>
+<p>Indica cierta correlaci&#243;n negativa, est&#225; muy cerca de -0.2 por lo que
+casi es una correlaci&#243;n negativa d&#233;bil. Existe una. Podr&#237;a indicar que
+un exesivo gasto en marketing no necesariamente generar&#225; un
+beneficio</p>
+<pre class="r"><code>cor(Base_MKT$Inversion_Red_Social, Base_MKT$Ventas)</code></pre>
+<pre><code>## [1] 0.2597178</code></pre>
+<p>Indica cierta correlaci&#243;n positiva d&#233;bil, es decir casi no existe una
+relaci&#243;n entre estas dos variables</p>
+</div>
+</div>
+<div class="section level3">
+<h3>Graficando para observar las relaciones entre variables</h3>
+<pre class="r"><code>if (!require(cowplot)) {
+  install.packages(&quot;cowplot&quot;)
+  library(cowplot)
+}</code></pre>
+<pre><code>## Loading required package: cowplot</code></pre>
+<pre class="r"><code># Crear scatter plot de Gastos_Marketing vs. Ventas
+scatter_plot_ventas &lt;- ggplot(Base_MKT, aes(x = Gastos_Marketing, y = Ventas)) +
+  geom_point() +
+  labs(title = &quot;Gastos de Marketing vs Ventas&quot;,
+       x = &quot;Gastos de Marketing&quot;, y = &quot;Ventas&quot;)
+
+# Crear scatter plot de Gastos_Marketing vs. Beneficio
+scatter_plot_beneficio &lt;- ggplot(Base_MKT, aes(x = Gastos_Marketing, y = Beneficio)) +
+  geom_point() +
+  labs(title = &quot;Gastos de Marketing vs Beneficio&quot;,
+       x = &quot;Gastos de Marketing&quot;, y = &quot;Beneficio&quot;)
+
+scatter_plot_ingresos &lt;- ggplot(Base_MKT, aes(x = Inversion_Red_Social, y = Ingresos_Publicidad_Online)) +
+  geom_point() +
+  labs(title = &quot;InvRedSocial vs IngresoPublicOnline&quot;,
+       x = &quot;Inversion_Red_Social&quot;, y = &quot;Ingresos_Publicidad_Online&quot;)
+
+# Crear scatter plot de Inversion_Red_Social vs. Ventas
+scatter_plot_ventas_inversion &lt;- ggplot(Base_MKT, aes(x = Inversion_Red_Social, y = Ventas)) +
+  geom_point() +
+  labs(title = &quot;Inversion_Red_Social vs Ventas&quot;,
+       x = &quot;Inversion_Red_Social&quot;, y = &quot;Ventas&quot;)
+
+
+plot_grid(scatter_plot_ventas, scatter_plot_beneficio,
+          scatter_plot_ingresos, scatter_plot_ventas_inversion,
+          ncol = 2, nrow = 2)</code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>Ahora vamos a hacer un primer modelo. Quisiera que usen los ejemplos
+que hice arriba y hagan un primer modelo llamado ModeloVenMark con una
+regresi&#243;n lineal entre las variables Ventas (variable dependiente) y
+Gastos_Marketing (variable independiente). Qu&#233; encontraron en el
+modelo?? C&#243;mo lo interpretan?? Hagan un gr&#225;fico o un gr&#225;fico interactivo
+como los que les puse arriba. Qu&#233; me quiere decir el R cuadrado del
+modelo?? Respondan a todo esto en uno o dos p&#225;rrafos abajo del
+chunk.</p>
+<pre class="r"><code>ModeloVenMark &lt;- lm(Ventas ~ Gastos_Marketing, data = Base_MKT)
+
+summary(ModeloVenMark)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Ventas ~ Gastos_Marketing, data = Base_MKT)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.50953 -0.42909 -0.05711  0.42773  1.84853 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)      1.177e+04  3.732e+02  31.530  &lt; 2e-16 ***
+## Gastos_Marketing 6.466e-01  7.464e-02   8.662  9.6e-14 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.7141 on 98 degrees of freedom
+## Multiple R-squared:  0.4336, Adjusted R-squared:  0.4279 
+## F-statistic: 75.04 on 1 and 98 DF,  p-value: 9.602e-14</code></pre>
+<pre class="r"><code>plot(Ventas ~ Gastos_Marketing, data = Base_MKT, main = &quot;Regresi&#243;n Lineal en Ventas&quot;, xlab = &quot;Gasto en Marketing&quot;, ylab = &quot;Ventas&quot;)
+abline(ModeloVenMark, col = &quot;red&quot;)</code></pre>
+<p><img src="javascript://" width="672"/>
+La m&#233;trica R2 indica que tan bueno es el modelo para explicar la
+variabilidad de la variable dependiente, para ello se toma valores entre
+0 y 1, cuando es 0 quiere decir que el modelo no explica la variabilidad
+y 1 indica que el modelo explica totalmente la variabilidad. En este
+caso al ser 0.4, nos dice que de alguna maera explica el modelo pero no
+es tan preciso como se esperar&#237;a.</p>
+<p>De manera gr&#225;fica se puede observar que tiene sentido ya que existen
+datos que se encuentran muy dispersos de la l&#237;nea que se ha
+dibujado.</p>
+<p>Ahora hagan lo mismo, usando como variable dependiente otra vez a
+“Ventas”, pero la variable independiente ahora ser&#225; Beneficio. No
+olviden de hacer uno o dos p&#225;rrafos con la interpretaci&#243;n.</p>
+<pre class="r"><code>ModeloVenBen &lt;- lm(Ventas ~ Beneficio, data = Base_MKT)
+
+summary(ModeloVenBen)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Ventas ~ Beneficio, data = Base_MKT)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.62189 -0.49258  0.05083  0.59800  2.07898 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 16667.2473   658.0344  25.329   &lt;2e-16 ***
+## Beneficio      -0.2382     0.0940  -2.534   0.0129 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9193 on 98 degrees of freedom
+## Multiple R-squared:  0.06148,    Adjusted R-squared:  0.05191 
+## F-statistic:  6.42 on 1 and 98 DF,  p-value: 0.01287</code></pre>
+<pre class="r"><code>plot(Ventas ~ Beneficio, data = Base_MKT, main = &quot;Regresi&#243;n Lineal en Ventas&quot;, xlab = &quot;Beneficio&quot;, ylab = &quot;Ventas&quot;)
+abline(ModeloVenBen, col = &quot;red&quot;)</code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>En este caso el modelo indica que existe una peque&#241;a relaci&#243;n
+negativa entre Ventas y el Beneficio, analizando la m&#233;trica de R 2 vemos
+que es de 0.05 por lo que indica que el modelo es muy malo no logra
+explicar para nada la variabilidad de las ventas basandonos en el
+beneficio.</p>
+<p>Ahora, hagan DOS MODELOS M&#193;S usando dos variables que consideren
+puedan indicarnos un resultado para la empresa. No olviden de hacer uno
+o dos p&#225;rrafos con la interpretaci&#243;n.</p>
+<pre class="r"><code>ModeloVenInvRedSocial &lt;- lm(Ventas ~ Inversion_Red_Social, data = Base_MKT)
+
+summary(ModeloVenInvRedSocial)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Ventas ~ Inversion_Red_Social, data = Base_MKT)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.18937 -0.58849 -0.00776  0.67306  1.92286 
+## 
+## Coefficients:
+##                       Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          1.448e+04  1.954e+02  74.115  &lt; 2e-16 ***
+## Inversion_Red_Social 2.601e-01  9.768e-02   2.662  0.00907 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9164 on 98 degrees of freedom
+## Multiple R-squared:  0.06745,    Adjusted R-squared:  0.05794 
+## F-statistic: 7.089 on 1 and 98 DF,  p-value: 0.009068</code></pre>
+<pre class="r"><code>plot(Ventas ~ Inversion_Red_Social, data = Base_MKT, main = &quot;Regresi&#243;n Lineal en Ventas&quot;, xlab = &quot;Inversi&#243;n en Redes Sociales&quot;, ylab = &quot;Ventas&quot;)
+abline(ModeloVenInvRedSocial, col = &quot;green&quot;)</code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>Esta comparaci&#243;n entre la variable de Inversi&#243;n en Redes Sociales y
+Ventas tiene un comportamiento bastante similar al modelo anterior, pero
+en este caso muestra cierta relaci&#243;n positiva, al revisar el factor R2
+se evidencia que es muy similar al anterior por lo que el modelo no es
+adecuado para mostrar la variabilidad.</p>
+<pre class="r"><code>ModeloVenIngrPubOnline &lt;- lm(Ventas ~ Ingresos_Publicidad_Online, data = Base_MKT)
+
+summary(ModeloVenIngrPubOnline)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Ventas ~ Ingresos_Publicidad_Online, data = Base_MKT)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.17230 -0.63034 -0.00838  0.60947  2.10980 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                1.409e+04  4.944e+02  28.494   &lt;2e-16 ***
+## Ingresos_Publicidad_Online 1.824e-01  9.888e-02   1.845   0.0681 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9329 on 98 degrees of freedom
+## Multiple R-squared:  0.03356,    Adjusted R-squared:  0.0237 
+## F-statistic: 3.403 on 1 and 98 DF,  p-value: 0.06808</code></pre>
+<pre class="r"><code>plot(Ventas ~ Ingresos_Publicidad_Online, data = Base_MKT, main = &quot;Regresi&#243;n Lineal en Ventas&quot;, xlab = &quot;Ingresos Publicidad Online&quot;, ylab = &quot;Ventas&quot;)
+abline(ModeloVenIngrPubOnline, col = &quot;blue&quot;)</code></pre>
+<p><img src="javascript://" width="672"/></p>
+<p>De los cuatro modelos elaborados este es el que peor interpretaci&#243;n y
+resultados produce, tiene una l&#237;nea casi horizontal, el factor R 2 es el
+m&#225;s bajo de todos los ejercicios indicando que este modelo es totalmente
+aleatorio e inadecuado para estos datos.</p>
+<p>Ahora, usen esta maravillosa funci&#243;n para poder poner en una sola
+tabla todos los resultados de sus modelos:</p>
+<pre class="r"><code>library(stargazer)</code></pre>
+<pre><code>## 
+## Please cite as:</code></pre>
+<pre><code>##  Hlavac, Marek (2022). stargazer: Well-Formatted Regression and Summary Statistics Tables.</code></pre>
+<pre><code>##  R package version 5.2.3. https://CRAN.R-project.org/package=stargazer</code></pre>
+<pre class="r"><code>#summary(ModeloVenBen)
+lista_modelos &lt;- list(ModeloVenMark, ModeloVenBen, ModeloVenInvRedSocial, ModeloVenIngrPubOnline)
+
+stargazer(lista_modelos, title=&quot;Resumen de modelos usados&quot;, type = &quot;text&quot;)</code></pre>
+<pre><code>## 
+## Resumen de modelos usados
+## =====================================================================================
+##                                                 Dependent variable:                  
+##                               -------------------------------------------------------
+##                                                       Ventas                         
+##                                    (1)           (2)           (3)           (4)     
+## -------------------------------------------------------------------------------------
+## Gastos_Marketing                0.647***                                             
+##                                  (0.075)                                             
+##                                                                                      
+## Beneficio                                     -0.238**                               
+##                                                (0.094)                               
+##                                                                                      
+## Inversion_Red_Social                                        0.260***                 
+##                                                              (0.098)                 
+##                                                                                      
+## Ingresos_Publicidad_Online                                                 0.182*    
+##                                                                            (0.099)   
+##                                                                                      
+## Constant                      11,767.120*** 16,667.250*** 14,479.780*** 14,087.820***
+##                                 (373.201)     (658.034)     (195.369)     (494.415)  
+##                                                                                      
+## -------------------------------------------------------------------------------------
+## Observations                       100           100           100           100     
+## R2                                0.434         0.061         0.067         0.034    
+## Adjusted R2                       0.428         0.052         0.058         0.024    
+## Residual Std. Error (df = 98)     0.714         0.919         0.916         0.933    
+## F Statistic (df = 1; 98)        75.038***      6.420**      7.089***       3.403*    
+## =====================================================================================
+## Note:                                                     *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
+<p>Finalmente, escriban un p&#225;rrafo en el que puedan concluir cu&#225;l es su
+mejor modelo. Luego, escriban cuatro decisiones que puede tomar la
+empresa a partir de sus modelos de regresi&#243;n lineal.</p>
+<p>Evidentemente en el an&#225;lisis realizado en todo el laboratorio se pudo
+observar que el modelo de relaci&#243;n lineal entre Ventas y Gastos
+Marketing es el mejor modelo para los datos entregados, a pesar de ser
+un buen modelo tampoco llega a ser perfecto ya que existen datos
+at&#237;picos que perjudican al entrenamiento, el modelo de Ventas con
+Beneficio es malo pero si deja la peque&#241;a idea de que existe cierta
+relaci&#243;n debil negativa entre estas dos variables.</p>
+<div class="section level4">
+<h4>Decisiones:</h4>
+<ol style="list-style-type: decimal;">
+<li><p>Mantener o aumentar el gasto en marketing porque este
+necesariamente si se va a reflejar en la cantidad de ventas.</p></li>
+<li><p>Cuando se realizan muchas ventas evitar dar muchos descuentos o
+revisar como abaratar el costo de producci&#243;n ya que existe una cierta
+relaci&#243;n negativa entre una gran cantidad de ventas y el beneficio que
+se tiene.</p></li>
+<li><p>Los ingresos y la publicidad online no est&#225;n relacionados,
+considerar una revisi&#243;n de este proceso</p></li>
+<li><p>Las ventas y la inversi&#243;n en redes sociales parecen no estar
+asociadas, realizar m&#225;s an&#225;lisis con otro tipo de modelos para confirmar
+una posible reducci&#243;n en este &#225;mbito.</p></li>
+</ol>
+</div>
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="module" src="https://s.brightspace.com/lib/bsi/20.23.11-217/unbundled/mathjax.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					if (document.querySelector('math') || /\$\$|\\\(|\\\[|\\begin{|\\ref{|\\eqref{/.test(document.body.innerHTML)) {
+						document.querySelectorAll('mspace[linebreak="newline"]').forEach(elm => {
+							elm.setAttribute('style', 'display: block; height: 0.5rem;');
+						});
+
+						window.D2L.MathJax.loadMathJax({
+							'outputScale': 1.5,
+							'renderLatex': true
+						});
+					}
+				});</script><script type="module" src="https://s.brightspace.com/lib/bsi/20.23.11-217/unbundled/prism.js"></script><script type="text/javascript">document.addEventListener('DOMContentLoaded', function() {
+					document.querySelectorAll('.d2l-code').forEach(code => {
+						window.D2L.Prism.formatCodeElement(code);
+					});
+				});</script></body></html>

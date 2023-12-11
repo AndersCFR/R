@@ -8,7 +8,8 @@ output: html_document
 m.a.s: muestra aleatorio simple
 
 Consiste en tomar n número de veces el mismo número y devolverlo, 
-el inconveniente es que un individuo puede ser seleccionado más de una vez.
+el inconveniente es que un individuo puede ser seleccionado más de una vez. No es 
+equiprobable.
 
 ```{r}
 sample(1:100, 15, replace = TRUE)
