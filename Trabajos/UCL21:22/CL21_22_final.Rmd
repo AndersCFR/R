@@ -2,7 +2,9 @@
 title: "Análisis Champions League 2021 2022"
 author: "Isaias Arcos, Nicolás Bejarano, Mateo Erazo"
 date: "12/12/2023"
+always_allow_html: true
 output:
+  pdf_document: default
   html_document:
     df_print: paged
 ---

@@ -1,0 +1,170 @@
+---
+title: "Actividad 1 Covid Impact"
+author: "Anderson Fernando Cardenas Real"
+output: html_document
+date: "2023-12-12"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+library(tidyverse)
+library(psych)
+
+data <- read.csv('COVID19_CAS_HADS.csv')
+head(data)
+```
+
+## Exploración de valores NA
+
+Al tener algunas filas vacías procedemos, sin información las retiramos para poder hacer la curación de datos
+
+```{r}
+#summary(data)
+data <- data[complete.cases(data),]
+dim(data)
+```
+Podemos ver que hubo una eliminación de 8 registros que presentaban solo valores NA.
+
+```{r}
+conteo_no <- data %>%
+  filter(university_student == "No") %>%
+  nrow()
+
+print(conteo_no/nrow(data))
+```
+
+## Codificación de variables
+
+Categorización de diagnóstico de covid
+```{r}
+data$diagnosed_covid_positive <- ifelse(data$diagnosed_covid_positive == "Nothing", "No", "Yes")
+```
+
+
+## Selección de variables
+
+Tomamos solo aquellas variables a ser usadas
+
+```{r}
+data <- data[, c("gender", "age", "diagnosed_covid_positive", "diagnosed_mental_issues")]
+head(data)
+```
+
+## Exploración descriptiva numérica
+
+```{r}
+summary(data$age)
+```
+
+
+```{r}
+print(sd(data$age))
+print(var(data$age))
+print(sd(data$age)/mean(data$age))
+```
+
+## Correlación en variables categórica nominal
+
+Uso chi cuadrado al no poder usar pearson por la naturaleza de variables.
+
+```{r}
+# Eliminar filas con datos faltantes que presentaban ciertos inconvenientes
+data_sin_na <- na.omit(data[c("gender", "diagnosed_covid_positive", "diagnosed_mental_issues")])
+
+# Realizar la prueba de chi-cuadrado para gender y diagnosed_covid_positive
+tabla_chi_cuadrado_gender_covid <- chisq.test(table(data_sin_na$gender, data_sin_na$diagnosed_covid_positive))
+print(tabla_chi_cuadrado_gender_covid)
+
+
+# Realizar la prueba de chi-cuadrado para gender y diagnosed_mental_issues
+tabla_chi_cuadrado_gender_mental <- chisq.test(table(data_sin_na$gender, data_sin_na$diagnosed_mental_issues))
+print(tabla_chi_cuadrado_gender_mental)
+
+# Realizar la prueba de chi-cuadrado para diagnosed_covid_positive y diagnosed_mental_issues
+tabla_chi_cuadrado_covid_mental <- chisq.test(table(data_sin_na$diagnosed_covid_positive, data_sin_na$diagnosed_mental_issues))
+print(tabla_chi_cuadrado_covid_mental)
+
+
+```
+
+
+## Exploración gráfica
+
+Conocer la proporción de casos positivos ve negativos
+
+```{r}
+
+ggplot(data, aes(x = gender, fill = diagnosed_covid_positive)) +
+  geom_bar(position = "stack", show.legend = FALSE) +
+  labs(title = "Distribución de Casos Covid Positivo por Género",
+       x = "Género", y = "Frecuencia") +
+  scale_fill_manual(values = c("lightblue", "lightgreen"))
+
+```
+
+```{r}
+
+# Filtrar solo las categorías "Yes" y "No" en diagnosed_mental_issues
+data_filtrado <- data[data$diagnosed_mental_issues %in% c("Yes", "No"), ]
+
+# Ajustar la configuración de factor de diagnosed_covid_positive
+data_filtrado$diagnosed_covid_positive <- factor(data_filtrado$diagnosed_covid_positive, levels = c("Yes", "No"))
+
+# Crear un gráfico de barras apiladas para asociar diagnosed_covid_positive, diagnosed_mental_issues y gender
+ggplot(data_filtrado, aes(x = diagnosed_covid_positive, fill = diagnosed_mental_issues)) +
+  geom_bar(position = "stack", alpha = 0.7) +
+  facet_wrap(~gender) +
+  labs(title = "Asociación entre Diagnóstico de COVID-19, Problemas Mentales y Género",
+       x = "Diagnóstico de COVID-19",
+       y = "Frecuencia",
+       fill = "Problemas Mentales") +
+  scale_fill_manual(values = c("Yes" = "lightblue", "No" = "lightgreen"))  # Ajusta los colores según tus preferencias
+
+```
+
+```{r}
+ggplot(data, aes(x = "", fill = diagnosed_covid_positive)) +
+  geom_bar(width = 1, stat = "count") +
+  coord_polar(theta = "y") +
+  labs(title = "Proporción de Diagnóstico de COVID-19",
+       fill = "Diagnóstico de COVID-19") +
+  theme_void()  # Elimina ejes y etiquetas para obtener un aspecto de pastel
+```
+
+
+```{r}
+ggplot(data, aes(x = diagnosed_covid_positive, y = age)) +
+  geom_boxplot(outlier.shape = NA) +  # Elimina los puntos atípicos
+  labs(title = "Boxplot de Edad por Diagnóstico de COVID-19",
+       x = "Diagnóstico de COVID-19",
+       y = "Edad") +
+  theme_minimal()
+
+```
+
+```{r}
+
+data_filtered$diagnosed_covid_positive <- factor(data_filtered$diagnosed_covid_positive, levels = c("Yes", "No"))
+data_filtered$diagnosed_mental_issues <- factor(data_filtered$diagnosed_mental_issues, levels = c("Yes", "No"))
+
+# Diagrama de Violín con orden invertido
+ggplot(data_filtered, aes(x = diagnosed_covid_positive, y = age, fill = diagnosed_mental_issues)) +
+  geom_violin() +
+  labs(title = "Diagrama de Violín de Edad por Diagnóstico COVID-19",
+       x = "Diagnóstico COVID-19",
+       y = "Edad",
+       fill = "Diagnóstico Mental") +
+  theme_minimal()
+
+```
+
+
